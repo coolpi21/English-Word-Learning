@@ -1,0 +1,15 @@
+.Input {
+    width: 600px;
+    height: 60px;
+    /*border: none;*/
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    caret-color: #ffffff;
+    color: #ffffff;
+    border-radius: 0;
+}
+
+.Input:focus-visible {
+    outline: none;
+}
