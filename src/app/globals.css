@@ -34,6 +34,12 @@
         --ring: 215 20.2% 65.1%;
 
         --radius: 0.5rem;
+
+        --neutral-10: #151c23;
+
+        --text-color: #ffffff;
+
+        --peach-gradient: linear-gradient(180deg, #e4a38e 0%, #e4938e 100%);
     }
 
     .dark {
@@ -88,5 +94,13 @@
     .no-scrollbar {
         -ms-overflow-style: none; /* IE and Edge */
         scrollbar-width: none; /* Firefox */
+    }
+
+    /* 在线链接服务仅供平台体验和调试使用，平台不承诺服务的稳定性，企业客户需下载字体包自行发布使用并做好备份。 */
+    @font-face {
+        font-family: "alimama";
+        src: url("//at.alicdn.com/wf/webfont/heEvFD5JzJWG/1EBSZpyh8ret.woff2") format("woff2"),
+        url("//at.alicdn.com/wf/webfont/heEvFD5JzJWG/8mUyVa9rIKnn.woff") format("woff");
+        font-display: swap;
     }
 }

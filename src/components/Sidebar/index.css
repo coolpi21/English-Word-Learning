@@ -1,0 +1,14 @@
+.side-bar {
+    background: rgba(255, 255, 255, .1);
+}
+
+.octicon {
+    display: inline-block;
+    overflow: visible !important;
+    vertical-align: text-bottom;
+    fill: currentColor;
+}
+
+.download--btn {
+    background: var(--peach-gradient);
+}

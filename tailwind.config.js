@@ -21,6 +21,9 @@ module.exports = {
                 input: "hsl(var(--input))",
                 ring: "hsl(var(--ring))",
                 background: "hsl(var(--background))",
+                second: 'var(--neutral-10)',
+                'second-text': 'var(--text-color)',
+                'button-gradient': 'var(--peach-gradient)',
                 foreground: "hsl(var(--foreground))",
                 primary: {
                     DEFAULT: "hsl(var(--primary))",
@@ -50,6 +53,7 @@ module.exports = {
                     DEFAULT: "hsl(var(--card))",
                     foreground: "hsl(var(--card-foreground))",
                 },
+
             },
             borderRadius: {
                 lg: `var(--radius)`,
@@ -58,6 +62,7 @@ module.exports = {
             },
             fontFamily: {
                 sans: ["var(--font-sans)", ...fontFamily.sans],
+                alimama: 'alimama',
             },
             keyframes: {
                 "accordion-down": {

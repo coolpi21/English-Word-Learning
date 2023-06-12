@@ -46,17 +46,21 @@ export async function POST(req: NextRequest) {
 
 async function requestStream(payload: StreamPayload) {
     let counter = 0;
+
     const resp = await fetch(
-        "https://proxy-1.ultrasamscai.com/v1/chat/completions",
+        "https://proxy3.ultrasamscai.com/v1/chat/completions",
         {
             headers: {
-                Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+                Authorization: `Bearer ${process.env.OPEN_API_KEY}`,
                 "Content-Type": "application/json",
             },
             method: "POST",
             body: JSON.stringify(payload),
         }
     );
+
+    console.log('resp', resp)
+
 
     if (resp.status !== 200) {
         return resp.body;

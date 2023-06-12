@@ -9,18 +9,20 @@ import chatService from "@/utils/chatService";
 
 type Props = {
     onWordStream: (word: string) => void
+    onWordCompleted: (word: string) => void
+    onGetWord: (word: string) => void
 }
 const WordInput = (props: Props) => {
-    const {onWordStream} = props
+    const {onWordStream, onWordCompleted, onGetWord} = props
     const {toast} = useToast()
 
     chatService.actions = {
         onCompleting: (sug) => {
-            // console.log('sug', sug)
             onWordStream(sug)
         },
-        onCompleted: () => {
-            // setLoading(false);
+        onCompleted: (sug: string) => {
+            console.log('完成', sug)
+            onWordCompleted(sug)
         },
     };
     const onSubmitWord = async (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -34,7 +36,7 @@ const WordInput = (props: Props) => {
                 })
                 return
             }
-
+            onGetWord(value)
             await requestWordLearning(value)
         }
     }
@@ -72,7 +74,7 @@ const WordInput = (props: Props) => {
         <div className="h-screen w-screen flex items-center justify-center">
             <ClientOnly>
                 <Input placeholder="请输入英文单词"
-                       className="Input relative bottom-3 text-[24px]"
+                       className="Input relative bottom-3 text-[24px] font-alimama"
                        onKeyDown={(e) => onSubmitWord(e)}></Input>
             </ClientOnly>
         </div>
