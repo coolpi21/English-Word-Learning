@@ -17,21 +17,6 @@ type Actions = {
     onCompleted?: (sug: string) => void;
 };
 
-// export const getCompletion = async (params: Props) => {
-// 	const resp = await fetch("/api/chat", {
-// 		headers: {
-// 			"Content-Type": "application/json",
-// 		},
-// 		method: "POST",
-// 		body: JSON.stringify(params),
-// 	});
-
-// 	if (!resp.ok) {
-// 		throw new Error(resp.statusText);
-// 	}
-
-// 	return await resp.json();
-// };
 
 class ChatService {
     private controller: AbortController;

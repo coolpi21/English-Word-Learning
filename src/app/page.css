@@ -7,7 +7,7 @@
     flex: none;
     flex-direction: column;
     flex-wrap: nowrap;
-    gap: 0px;
+    gap: 0;
     justify-content: flex-start;
     padding: 40px 0 30px;
     position: relative;
@@ -19,4 +19,16 @@
 .container {
     background-image: url("https://cali.so/grid-black.svg");
     background-repeat: repeat;
+}
+
+.word-card__content h3 {
+    font-size: 20px;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+.word-card__content p,
+.word-card__content li {
+    color: rgba(190, 201, 214, 1);
+    @apply mb-2;
 }

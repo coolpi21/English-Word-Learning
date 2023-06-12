@@ -22,19 +22,16 @@ const Home = () => {
 
     return (
         <div className="container h-screen w-screen flex flex-col items-center justify-center">
-            <div className="word-input__wrapper">
-                <WordInput onWordStream={onWordStream}/>
-            </div>
+
+            <WordInput onWordStream={onWordStream}/>
+
             <div
                 className={clsx([
                     'card-wrapper', 'fixed', 'w-screen', 'h-screen', 'left-0', 'top-0', 'bg-blend-overlay', 'flex', 'items-center', 'justify-center',
                     isShowCard ? 'block' : 'hidden',
                 ])}>
-                <Card className="w-[600px] h-[600px] overflow-y-auto no-scrollbar">
-                    <CardTitle>
-                        Hello World
-                    </CardTitle>
-                    <CardContent>
+                <Card className="w-[600px] h-[600px] overflow-y-auto no-scrollbar bg-[#151c23]  p-[24px]">
+                    <CardContent className="word-card__content">
                         <WorkMarkdown>{wordDefinition}</WorkMarkdown>
                     </CardContent>
                 </Card>
