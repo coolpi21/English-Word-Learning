@@ -1,11 +1,13 @@
 'use client'
-import React from 'react'
-import {handleCheckIsEnglishWord} from '@/utils'
-import {ClientOnly} from '@/components/ClientOnly'
-import {useToast} from "@/components/ui/use-toast";
-import {Input} from '@/components/ui/input'
+import React, { useState } from 'react'
+import { handleCheckIsEnglishWord } from '@/utils'
+import { ClientOnly } from '@/components/ClientOnly'
+import { useToast } from '@/components/ui/use-toast'
+import { Input } from '@/components/ui/input'
 import './index.css'
-import chatService from "@/utils/chatService";
+import chatService from '@/utils/chatService'
+import { motion } from 'framer-motion'
+import { Forward } from 'lucide-react'
 
 type Props = {
     onWordStream: (word: string) => void
@@ -13,35 +15,37 @@ type Props = {
     onGetWord: (word: string) => void
 }
 const WordInput = (props: Props) => {
-    const {onWordStream, onWordCompleted, onGetWord} = props
-    const {toast} = useToast()
-
+    const { onWordStream, onWordCompleted, onGetWord } = props
+    const { toast } = useToast()
+    const [searchWord, setSearchWord] = useState('')
+    const [loading, setLoading] = useState(false)
     chatService.actions = {
         onCompleting: (sug) => {
             onWordStream(sug)
         },
         onCompleted: (sug: string) => {
-            console.log('完成', sug)
             onWordCompleted(sug)
+            setLoading(false)
         },
-    };
+    }
     const onSubmitWord = async (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            const value = e.currentTarget.value
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault()
 
-            if (!handleCheckIsEnglishWord(value)) {
+            if (!handleCheckIsEnglishWord(searchWord)) {
                 toast({
                     title: '错误提示',
-                    description: '请输入英文单词'
+                    description: '请输入英文单词',
                 })
                 return
             }
-            onGetWord(value)
-            await requestWordLearning(value)
+            onGetWord(searchWord)
+            await requestWordLearning()
         }
     }
 
-    async function requestWordLearning(word: string) {
+    function requestWordLearning() {
+        if (loading) return
         const prompt = `你是一位优秀的英语老师，每当我输入一个单词，你需要完成以下任务：
             task1: 单词词性、音标、中文释义、英文释义、词根词缀起源故事，一行一个
             task2: 用这个单词造三个工作场景英文例句附英文翻译
@@ -61,21 +65,27 @@ const WordInput = (props: Props) => {
             ### 小测验
             <task5 result>
             
-            单词是 ${word}`
-
-        await chatService.getStream({
-            prompt
-        });
-
-
+            单词是 ${searchWord}`
+        setLoading(true)
+        chatService.getStream({
+            prompt,
+        })
+        setSearchWord('')
     }
 
     return (
-        <div className="h-screen w-screen flex items-center justify-center">
+        <div className='h-screen w-screen flex items-center justify-center'>
             <ClientOnly>
-                <Input placeholder="请输入英文单词"
-                       className="Input relative bottom-3 text-[24px] font-alimama"
-                       onKeyDown={(e) => onSubmitWord(e)}></Input>
+                <Input
+                    placeholder='请输入英文单词'
+                    value={searchWord}
+                    className='Input relative bottom-3 text-[24px] font-alimama'
+                    onChange={(e) => setSearchWord(e.target.value)}
+                    onKeyDown={(e) => onSubmitWord(e)}
+                />
+                <motion.div initial={{ scale: 0.95 }} whileTap={{ scale: 1 }} onClick={requestWordLearning}>
+                    <Forward size={24} color='#ffffff' />
+                </motion.div>
             </ClientOnly>
         </div>
     )

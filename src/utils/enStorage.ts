@@ -1,9 +1,9 @@
-import {EN_WORD_STORE} from "@/constant";
-import {ENWordStorageType, ENWord} from '@/types'
-import {getLocal, setLocal} from "@/utils/storage";
+import { EN_WORD_STORE } from '@/constant'
+import { ENWordStorageType, ENWord } from '@/types'
+import { getLocal, setLocal } from '@/utils/storage'
 
 export const getEnWordStore = () => {
-    let list: ENWord[] = getLocal(EN_WORD_STORE);
+    let list: ENWord[] = getLocal(EN_WORD_STORE)
 
     if (!list) {
         list = []
@@ -12,7 +12,6 @@ export const getEnWordStore = () => {
 
     return list
 }
-
 
 export const updateEnWordStore = (list: ENWord[]) => {
     setLocal(EN_WORD_STORE, list)
@@ -26,12 +25,11 @@ export const addEnWordStore = (value: ENWord) => {
 
 export const removeEnWordStore = (word: string) => {
     const list = getEnWordStore()
-    const wordIndex = list.findIndex(v => v.word === word)
+    const wordIndex = list.findIndex((v) => v.word === word)
 
     if (wordIndex > -1) {
         list.splice(wordIndex, 1)
         updateEnWordStore(list)
         return list
     }
-
 }

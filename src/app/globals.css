@@ -82,7 +82,14 @@
     }
 
     body {
-        background: linear-gradient(0deg, #000 12.05%, rgba(0, 0, 0, 0) 53.19%), linear-gradient(122.79deg, #000 5.02%, rgba(0, 0, 0, 0) 98.29%), radial-gradient(310.13% 135.99% at 205.26% 100%, rgba(253, 98, 90, 0.8) 0%, rgba(213, 20, 144, 0.8) 46.24%, rgba(42, 78, 171, 0.8) 82.29%);
+        background: linear-gradient(0deg, #000 12.05%, rgba(0, 0, 0, 0) 53.19%),
+            linear-gradient(122.79deg, #000 5.02%, rgba(0, 0, 0, 0) 98.29%),
+            radial-gradient(
+                310.13% 135.99% at 205.26% 100%,
+                rgba(253, 98, 90, 0.8) 0%,
+                rgba(213, 20, 144, 0.8) 46.24%,
+                rgba(42, 78, 171, 0.8) 82.29%
+            );
     }
 
     /* Hide scrollbar for Chrome, Safari and Opera */
@@ -98,9 +105,9 @@
 
     /* 在线链接服务仅供平台体验和调试使用，平台不承诺服务的稳定性，企业客户需下载字体包自行发布使用并做好备份。 */
     @font-face {
-        font-family: "alimama";
-        src: url("//at.alicdn.com/wf/webfont/heEvFD5JzJWG/1EBSZpyh8ret.woff2") format("woff2"),
-        url("//at.alicdn.com/wf/webfont/heEvFD5JzJWG/8mUyVa9rIKnn.woff") format("woff");
+        font-family: 'alimama';
+        src: url('//at.alicdn.com/wf/webfont/heEvFD5JzJWG/1EBSZpyh8ret.woff2') format('woff2'),
+            url('//at.alicdn.com/wf/webfont/heEvFD5JzJWG/8mUyVa9rIKnn.woff') format('woff');
         font-display: swap;
     }
 }

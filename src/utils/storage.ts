@@ -1,21 +1,28 @@
 export function getLocal(key: string) {
-    const item = window.localStorage.getItem(key);
+    if (typeof window === 'undefined') return
+    const item = window.localStorage.getItem(key)
 
     if (item) {
-        return JSON.parse(item);
+        return JSON.parse(item)
     }
 
-    return null;
+    return null
 }
 
 export function setLocal(key: string, value: any): void {
-    window.localStorage.setItem(key, JSON.stringify(value));
+    if (typeof window === 'undefined') return
+
+    window.localStorage.setItem(key, JSON.stringify(value))
 }
 
 export function removeLocal(key: string): void {
-    window.localStorage.removeItem(key);
+    if (typeof window === 'undefined') return
+
+    window.localStorage.removeItem(key)
 }
 
 export function clearLocal(): void {
-    window.localStorage.clear();
+    if (typeof window === 'undefined') return
+
+    window.localStorage.clear()
 }

@@ -1,19 +1,15 @@
 'use client'
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import WordInput from '@/components/WordInput'
-import {Toaster} from "@/components/ui/toaster"
+import { Toaster } from '@/components/ui/toaster'
 import './page.css'
-import {
-    Card,
-    CardContent,
-    CardTitle
-} from "@/components/ui/card"
-import {clsx} from "clsx";
-import WorkMarkdown from "@/components/WordMarkdown";
-import {AnimatePresence, motion} from 'framer-motion'
-import Sidebar from "@/components/Sidebar";
-import {Star} from "lucide-react";
-import {addEnWordStore, removeEnWordStore} from "@/utils/enStorage";
+import Sidebar from '@/components/Sidebar'
+import { addEnWordStore, getEnWordStore, removeEnWordStore } from '@/utils/enStorage'
+import { useSetAtom } from 'jotai'
+import { collectWordCardList } from '@/store'
+import chatService from '@/utils/chatService'
+import WordCard from '@/components/WordCard'
+import Setting from '@/components/Setting'
 
 const Home = () => {
     const [searchWord, setSearchWord] = useState('')
@@ -21,20 +17,18 @@ const Home = () => {
     const [isShowCard, setIsShowCard] = useState(false)
     const [isCollect, setIsCollect] = useState(false)
     const [isShowCollect, setIsShowCollect] = useState(false)
-
-    const collect_start_variants = {
-        show: {opacity: 1},
-        hide: {opacity: 0}
-    }
+    const setCollectList = useSetAtom(collectWordCardList)
+    const [isLoading, setIsLoading] = useState(false)
 
     function onWordStream(word: string) {
+        setIsLoading(true)
         setIsShowCard(true)
         setWordDefinition(word)
     }
 
     function onWordCompleted() {
         setIsShowCollect(true)
-
+        setIsLoading(false)
     }
 
     function onGetWord(word: string) {
@@ -42,46 +36,45 @@ const Home = () => {
     }
 
     function handleCollectWord() {
+        if (!isShowCollect) return
         setIsCollect(!isCollect)
 
         if (!isCollect) {
             addEnWordStore({
                 word: searchWord,
-                content: wordDefinition
+                content: wordDefinition,
             })
         } else {
             removeEnWordStore(searchWord)
         }
+
+        setCollectList(getEnWordStore())
     }
 
+    function handleCloseWordCard() {
+        if (isLoading) {
+            chatService.cancel()
+        }
+        setIsShowCard(false)
+        setIsCollect(false)
+        setIsShowCollect(false)
+    }
 
     return (
-        <div className="container h-screen w-screen flex flex-col items-center justify-center">
-            <Sidebar/>
-            <WordInput onWordStream={onWordStream} onWordCompleted={onWordCompleted} onGetWord={onGetWord}/>
+        <div className='container h-screen w-screen flex flex-col items-center justify-center'>
+            <Sidebar />
+            <WordInput onWordStream={onWordStream} onWordCompleted={onWordCompleted} onGetWord={onGetWord} />
             {isShowCard && (
-                <motion.div animate={{y: -60}} className="fixed left-1/2">
-                    <Card
-                        className="w-[600px] max-h-[600px] overflow-y-auto no-scrollbar bg-[#151c23]  p-[24px] border-0">
-                        <CardTitle>
-                            <div className="text-white flex justify-between">
-                                <span>卡片</span>
-                                <motion.div variants={collect_start_variants} animate={isShowCollect ? 'show' : 'hide'}
-                                            initial={false}>
-                                    <Star size={24} color={isCollect ? 'yellow' : 'white'}
-                                          fill={isCollect ? 'yellow' : 'transparent'}
-                                          onClick={handleCollectWord}/>
-                                </motion.div>
-
-                            </div>
-                        </CardTitle>
-                        <CardContent className="word-card__content">
-                            <WorkMarkdown>{wordDefinition}</WorkMarkdown>
-                        </CardContent>
-                    </Card>
-                </motion.div>
+                <WordCard
+                    isCollect={isCollect}
+                    isShowCollect={isShowCollect}
+                    wordDefinition={wordDefinition}
+                    onCloseWordCard={handleCloseWordCard}
+                    onCollectWorld={handleCollectWord}
+                ></WordCard>
             )}
 
+            <Setting />
 
             <Toaster></Toaster>
         </div>

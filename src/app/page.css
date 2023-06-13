@@ -17,7 +17,7 @@
 }
 
 .container {
-    background-image: url("https://cali.so/grid-black.svg");
+    background-image: url('https://cali.so/grid-black.svg');
     background-repeat: repeat;
 }
 
