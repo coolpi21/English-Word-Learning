@@ -86,6 +86,7 @@ const Sidebar = () => {
                     variants={open_btn_variants}
                     style={{ position: 'absolute', top: '50%', translateY: '-50%', zIndex: 100 }}
                     animate={isWider ? 'open' : 'close'}
+                    initial={false}
                 >
                     <motion.div
                         onClick={changeSidebarWidth}
@@ -100,7 +101,7 @@ const Sidebar = () => {
                             'cursor-pointer',
                         ])}
                         initial={{ scale: 0.95 }}
-                        whileHover={{ scale: 1 }}
+                        whileHover={{ scale: 1.2 }}
                     >
                         {isWider ? <X size={24} color='#ffffff' /> : <ArrowRight size={24} color='#ffffff' />}
                     </motion.div>

@@ -9,3 +9,5 @@ export const dynamicCollectWordCardList = atom((get) => get(collectWordCardList)
 export const api_key = atom(getAPIKey())
 
 export const proxy_url = atom(getProxyUrl())
+
+export const showErrorMessage = atom(false)

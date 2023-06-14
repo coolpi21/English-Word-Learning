@@ -6,8 +6,7 @@ import { useToast } from '@/components/ui/use-toast'
 import { Input } from '@/components/ui/input'
 import './index.css'
 import chatService from '@/utils/chatService'
-import { motion } from 'framer-motion'
-import { Forward } from 'lucide-react'
+import { ALL_SETTINGS_EMPTY_ERROR, API_KEY_EMPTY_ERROR, PROXY_URL_EMPTY_ERROR } from '@/constant'
 
 type Props = {
     onWordStream: (word: string) => void
@@ -31,7 +30,7 @@ const WordInput = (props: Props) => {
     const onSubmitWord = async (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault()
-
+            if (!checkIsEmptyInput()) return
             if (!handleCheckIsEnglishWord(searchWord)) {
                 toast({
                     title: '错误提示',
@@ -44,7 +43,7 @@ const WordInput = (props: Props) => {
         }
     }
 
-    function requestWordLearning() {
+    async function requestWordLearning() {
         if (loading) return
         const prompt = `你是一位优秀的英语老师，每当我输入一个单词，你需要完成以下任务：
             task1: 单词词性、音标、中文释义、英文释义、词根词缀起源故事，一行一个
@@ -67,25 +66,62 @@ const WordInput = (props: Props) => {
             
             单词是 ${searchWord}`
         setLoading(true)
-        chatService.getStream({
-            prompt,
-        })
-        setSearchWord('')
+        try {
+            await chatService.getStream({
+                prompt,
+            })
+        } catch (e) {
+            const error = e as Error
+
+            if (error.message === API_KEY_EMPTY_ERROR) {
+                toast({
+                    title: '错误提示',
+                    description: '请去填写API KEY',
+                })
+            }
+
+            if (error.message === PROXY_URL_EMPTY_ERROR) {
+                toast({
+                    title: '错误提示',
+                    description: '请去填写PROXY URL',
+                })
+            }
+
+            if (error.message === ALL_SETTINGS_EMPTY_ERROR) {
+                toast({
+                    title: '错误提示',
+                    description: '您的配制项为空，请去填写',
+                })
+            }
+        } finally {
+            setLoading(false)
+            setSearchWord('')
+        }
+    }
+
+    function checkIsEmptyInput() {
+        if (searchWord === '') {
+            toast({
+                title: '错误提示',
+                description: '请输入英文单词',
+            })
+            return false
+        }
+        return true
     }
 
     return (
-        <div className='h-screen w-screen flex items-center justify-center'>
+        <div className='h-screen w-screen flex items-center justify-center '>
             <ClientOnly>
-                <Input
-                    placeholder='请输入英文单词'
-                    value={searchWord}
-                    className='Input relative bottom-3 text-[24px] font-alimama'
-                    onChange={(e) => setSearchWord(e.target.value)}
-                    onKeyDown={(e) => onSubmitWord(e)}
-                />
-                <motion.div initial={{ scale: 0.95 }} whileTap={{ scale: 1 }} onClick={requestWordLearning}>
-                    <Forward size={24} color='#ffffff' />
-                </motion.div>
+                <div className='input-wrapper relative flex justify-center items-center'>
+                    <Input
+                        placeholder='请输入英文单词'
+                        value={searchWord}
+                        className='Input relative bottom-3 text-[24px] font-alimama'
+                        onChange={(e) => setSearchWord(e.target.value)}
+                        onKeyDown={(e) => onSubmitWord(e)}
+                    />
+                </div>
             </ClientOnly>
         </div>
     )

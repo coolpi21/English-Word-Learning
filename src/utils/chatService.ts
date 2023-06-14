@@ -1,5 +1,7 @@
-import {Message} from '@/types'
-import {getAPIKey} from '@/utils/settingStorage'
+'use client'
+import { Message } from '@/types'
+import { getAPIKey, getProxyUrl } from '@/utils/settingStorage'
+import { ALL_SETTINGS_EMPTY_ERROR, API_KEY_EMPTY_ERROR, PROXY_URL_EMPTY_ERROR } from '@/constant'
 
 type StreamParams = {
     prompt: string
@@ -36,14 +38,21 @@ class ChatService {
     }
 
     public async getStream(params: StreamParams) {
-        const {prompt, history = [], options = {}} = params
+        const { prompt, history = [], options = {} } = params
         const key = getAPIKey()
-
+        const url = getProxyUrl()
         let suggestion = ''
+        if (key === '' && url === '') {
+            throw new Error(ALL_SETTINGS_EMPTY_ERROR)
+        }
+        if (key === '') {
+            throw new Error(API_KEY_EMPTY_ERROR)
+        }
+        if (url === '') {
+            throw new Error(PROXY_URL_EMPTY_ERROR)
+        }
+
         try {
-            if (key === '') {
-                throw new Error('缺少key')
-            }
             const response = await fetch('/api/word', {
                 headers: {
                     'Content-Type': 'application/json',
@@ -52,6 +61,7 @@ class ChatService {
                 body: JSON.stringify({
                     prompt,
                     key,
+                    url
                 }),
                 signal: this.controller.signal,
             })
@@ -66,7 +76,7 @@ class ChatService {
 
             let done = false
             while (!done) {
-                const {value, done: doneReadingStream} = await reader.read()
+                const { value, done: doneReadingStream } = await reader.read()
                 done = doneReadingStream
 
                 const chunkValue = decoder.decode(value)
@@ -75,7 +85,6 @@ class ChatService {
                 await new Promise((resolve) => setTimeout(resolve, 100))
             }
         } catch (error) {
-            console.log(error)
         } finally {
             this.actions?.onCompleted?.(suggestion)
             this.controller = new AbortController()

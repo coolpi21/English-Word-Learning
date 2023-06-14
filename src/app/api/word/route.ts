@@ -15,11 +15,11 @@ type StreamPayload = {
 }
 
 export async function POST(req: NextRequest) {
-    const { prompt, history = [], options = {}, key } = await req.json()
+    const { prompt, history = [], options = {}, key, url } = await req.json()
 
     const { max_tokens, temperature } = options
     const data = {
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-3.5-turbo-0613',
         messages: [
             {
                 role: 'user',
@@ -31,15 +31,15 @@ export async function POST(req: NextRequest) {
         max_tokens: Number(max_tokens) || MAX_TOKEN,
     }
 
-    const stream = await requestStream(data as any, key)
+    const stream = await requestStream(data as any, key, url)
     return new Response(stream)
-    // return NextResponse.json({msg: "hello world"})
 }
 
-async function requestStream(payload: StreamPayload, key: string) {
+async function requestStream(payload: StreamPayload, key: string, url: string) {
     let counter = 0
+    console.log(url, key)
 
-    const resp = await fetch('https://proxy3.ultrasamscai.com/v1/chat/completions', {
+    const resp = await fetch(`${url}/v1/chat/completions`, {
         headers: {
             'Authorization': `Bearer ${key}`,
             'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ function createStream(response: Response, counter: number) {
             const onParse = (event: ParsedEvent | ReconnectInterval) => {
                 if (event.type === 'event') {
                     const data = event.data
-                    // console.log("data", data);
+
                     if (data === '[DONE]') {
                         controller.close()
                         return
