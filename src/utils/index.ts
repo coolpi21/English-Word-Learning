@@ -30,3 +30,16 @@ export function downloadCSV(data: ENWord[], fileName = 'data.csv') {
     downloadLink.click()
     document.body.removeChild(downloadLink)
 }
+
+/**
+ * 判断是否为正确的url地址
+ * @param url
+ */
+export function isValidUrl(url: string): boolean {
+    try {
+        new URL(url)
+        return true
+    } catch (e) {
+        return false
+    }
+}

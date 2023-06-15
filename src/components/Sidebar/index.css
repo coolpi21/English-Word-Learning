@@ -1,5 +1,6 @@
 .side-bar {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--color-canvas-subtle);
+    border-right: var(--borderWidth-thin, 1px) solid var(--color-border-default) !important;
 }
 
 .octicon {
@@ -11,4 +12,12 @@
 
 .download--btn {
     background: var(--peach-gradient);
+}
+
+.logo-text {
+    background: -webkit-linear-gradient(0deg, #a371f7, #a5d6ff, #aff5b4);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-box-decoration-break: clone;
 }

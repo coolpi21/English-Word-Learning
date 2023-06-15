@@ -7,6 +7,7 @@ export const API_KEY = 'api_key'
 
 export const PROXY_URL = 'proxy_url'
 
+export const DEFAULT_MODEL = 'gpt_model'
 export const ALL_SETTINGS_EMPTY_ERROR = 'API key and proxy url are empty'
 
 export const API_KEY_EMPTY_ERROR = 'API key is empty'

@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import './index.css'
 import { motion } from 'framer-motion'
 import Collect from '@/components/Collect'
@@ -10,6 +10,7 @@ import { getEnWordStore, removeEnWordStore } from '@/utils/enStorage'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { collectWordCardList } from '@/store'
 import WordCard from '@/components/WordCard'
+import { useToast } from '@/components/ui/use-toast'
 
 const Sidebar = () => {
     const [isWider, setIsWider] = useState(false)
@@ -18,6 +19,7 @@ const Sidebar = () => {
     const [isShowWordCard, setIsShowWordCard] = useState(false)
     const [collectWord, setCollectWord] = useState('')
 
+    const { toast } = useToast()
     const open_btn_variants = {
         open: { left: 'calc(100vw - 110px)' },
         close: { left: '90px' },
@@ -30,6 +32,10 @@ const Sidebar = () => {
 
     function onCancelCollect(word: string) {
         removeEnWordStore(word)
+        toast({
+            description: '取消收藏成功',
+            className: 'bg-green-500 text-white border-0',
+        })
         setCollectList(getEnWordStore())
     }
 
@@ -40,6 +46,13 @@ const Sidebar = () => {
     function handleDownloadCSV() {
         const data = getEnWordStore()
 
+        if (data.length === 0) {
+            toast({
+                description: '暂无收藏单词',
+                className: 'bg-red-500 text-white border-0',
+            })
+            return
+        }
         downloadCSV(data)
     }
 
@@ -65,11 +78,11 @@ const Sidebar = () => {
             <div className='side-bar h-screen text-white relative'>
                 <div className='flex flex-col absolute left-[60px] top-5 -translate-x-1/2 justify-center items-center'>
                     <svg
-                        height='64'
+                        height='48'
                         aria-hidden='true'
                         viewBox='0 0 16 16'
                         version='1.1'
-                        width='64'
+                        width='48'
                         data-view-component='true'
                         className='octicon octicon-mark-github'
                     >
@@ -107,32 +120,61 @@ const Sidebar = () => {
                     </motion.div>
                 </motion.div>
 
-                <Suspense fallback={<div className='absolute left-[120px] top-5 font-alimama'>Loading...</div>}>
-                    {isWider && (
-                        <div className='collect-container absolute top-0 right-0 w-[calc(100%-80px)] h-full flex flex-wrap gap-4 p-10 content-start'>
-                            <Collect
-                                cardList={collectList}
-                                onCancelCollect={onCancelCollect}
-                                onSelectCollectWord={(word) => {
-                                    setIsShowWordCard(true)
-                                    setCollectWord(word)
-                                }}
-                            ></Collect>
-                        </div>
-                    )}
-                </Suspense>
+                {isWider && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{
+                            opacity: 1,
+                            transition: {
+                                delay: 0.3,
+                            },
+                        }}
+                        className='collect-container absolute top-0 right-0 w-[calc(100%-80px)] h-full flex flex-wrap gap-4 p-10 content-start overflow-y-auto'
+                    >
+                        <Collect
+                            cardList={collectList}
+                            onCancelCollect={onCancelCollect}
+                            onSelectCollectWord={(word) => {
+                                setIsShowWordCard(true)
+                                setCollectWord(word)
+                            }}
+                        ></Collect>
+                    </motion.div>
+                )}
 
                 {isShowWordCard && (
                     <WordCard
                         onCloseWordCard={() => {
                             setIsShowWordCard(false)
                         }}
+                        isLoading={false}
                         isShowCollect={true}
                         isCollect={true}
                         onCollectWorld={onCollectWord}
                         wordDefinition={getCurrentWordContent()}
                     />
                 )}
+
+                <motion.div
+                    className='logo-text absolute font-bold bottom-[20px] left-[10px]'
+                    initial={false}
+                    animate={{
+                        fontSize: isWider ? '24px' : '80px',
+                    }}
+                >
+                    WORD
+                </motion.div>
+                <motion.div
+                    className='logo-text absolute font-bold bottom-[120px] left-[80px]'
+                    initial={false}
+                    animate={{
+                        fontSize: isWider ? '16px' : '48px',
+                        left: isWider ? '40px' : '80px',
+                        bottom: isWider ? '50px' : '120px',
+                    }}
+                >
+                    LEARNING
+                </motion.div>
             </div>
         </motion.div>
     )

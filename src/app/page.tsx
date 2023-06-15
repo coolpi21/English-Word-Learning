@@ -10,6 +10,7 @@ import { collectWordCardList } from '@/store'
 import chatService from '@/utils/chatService'
 import WordCard from '@/components/WordCard'
 import Setting from '@/components/Setting'
+import { useToast } from '@/components/ui/use-toast'
 
 const Home = () => {
     const [searchWord, setSearchWord] = useState('')
@@ -17,22 +18,41 @@ const Home = () => {
     const [isShowCard, setIsShowCard] = useState(false)
     const [isCollect, setIsCollect] = useState(false)
     const [isShowCollect, setIsShowCollect] = useState(false)
+    const [isAborted, setIsAborted] = useState(false)
     const setCollectList = useSetAtom(collectWordCardList)
     const [isLoading, setIsLoading] = useState(false)
+    const [isWordStreaming, setIsWordStreaming] = useState(false)
+    const { toast } = useToast()
 
     function onWordStream(word: string) {
-        setIsLoading(true)
-        setIsShowCard(true)
+        setIsLoading(false)
+        setIsWordStreaming(true)
         setWordDefinition(word)
     }
 
     function onWordCompleted() {
+        if (isAborted) {
+            setIsShowCollect(false)
+        } else {
+            setIsShowCollect(true)
+        }
+        setIsWordStreaming(false)
+    }
+
+    function onWordIsInLocalCompleted(word: string) {
+        setIsShowCard(true)
+        setIsCollect(true)
         setIsShowCollect(true)
-        setIsLoading(false)
+        setWordDefinition(word)
     }
 
     function onGetWord(word: string) {
         setSearchWord(word)
+    }
+
+    function onShowWordCard() {
+        setIsLoading(true)
+        setIsShowCard(true)
     }
 
     function handleCollectWord() {
@@ -44,28 +64,46 @@ const Home = () => {
                 word: searchWord,
                 content: wordDefinition,
             })
+            toast({
+                description: '收藏成功',
+                className: 'bg-green-500 text-white border-0',
+            })
         } else {
             removeEnWordStore(searchWord)
+            toast({
+                description: '取消收藏成功',
+                className: 'bg-green-500 text-white border-0',
+            })
         }
 
         setCollectList(getEnWordStore())
     }
 
     function handleCloseWordCard() {
-        if (isLoading) {
+        if (isWordStreaming) {
+            setIsAborted(true)
             chatService.cancel()
         }
-        setIsShowCard(false)
-        setIsCollect(false)
+
         setIsShowCollect(false)
+        setIsCollect(false)
+        setWordDefinition('')
+        setIsShowCard(false)
     }
 
     return (
         <div className='container h-screen w-screen flex flex-col items-center justify-center'>
             <Sidebar />
-            <WordInput onWordStream={onWordStream} onWordCompleted={onWordCompleted} onGetWord={onGetWord} />
+            <WordInput
+                onWordStream={onWordStream}
+                onWordCompleted={onWordCompleted}
+                onGetWord={onGetWord}
+                onShowWordCard={onShowWordCard}
+                onWordIsInLocalCompleted={onWordIsInLocalCompleted}
+            />
             {isShowCard && (
                 <WordCard
+                    isLoading={isLoading}
                     isCollect={isCollect}
                     isShowCollect={isShowCollect}
                     wordDefinition={wordDefinition}

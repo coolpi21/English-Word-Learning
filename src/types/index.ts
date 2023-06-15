@@ -18,3 +18,5 @@ export type ENWord = {
 export type ENWordStorageType = {
     [key: string]: ENWord[]
 }
+
+export type ModelType = 'gpt-3.5-turbo-0613' | 'gpt-3.5-turbo-16k' | 'gpt-3.5-turbo-0301'

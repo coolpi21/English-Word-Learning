@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { type MessageList } from '@/types'
 import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser'
 import { MAX_TOKEN, TEMPERATURE } from '@/constant'
@@ -8,18 +8,17 @@ export const runtime = 'edge'
 type StreamPayload = {
     model: string
     messages: MessageList
-    // prompt: string
     temperature?: number
     stream: boolean
     max_tokens?: number
 }
 
 export async function POST(req: NextRequest) {
-    const { prompt, history = [], options = {}, key, url } = await req.json()
+    const { prompt, options = {}, key, url, model } = await req.json()
 
     const { max_tokens, temperature } = options
     const data = {
-        model: 'gpt-3.5-turbo-0613',
+        model,
         messages: [
             {
                 role: 'user',

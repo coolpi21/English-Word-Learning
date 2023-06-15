@@ -17,18 +17,19 @@
 }
 
 .container {
-    background-image: url('https://cali.so/grid-black.svg');
     background-repeat: repeat;
 }
 
+.word-card__content {
+    @apply text-white;
+}
+
 .word-card__content h3 {
-    font-size: 20px;
-    color: #ffffff;
-    margin-bottom: 8px;
+    @apply text-lg text-white mb-2;
+
 }
 
 .word-card__content p,
 .word-card__content li {
-    color: rgba(190, 201, 214, 1);
-    @apply mb-2;
+    @apply mb-2 text-sm text-[#7d8590];
 }

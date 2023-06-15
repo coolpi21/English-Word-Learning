@@ -1,6 +1,6 @@
 'use client'
 import { Message } from '@/types'
-import { getAPIKey, getProxyUrl } from '@/utils/settingStorage'
+import { getAPIKey, getModel, getProxyUrl } from '@/utils/settingStorage'
 import { ALL_SETTINGS_EMPTY_ERROR, API_KEY_EMPTY_ERROR, PROXY_URL_EMPTY_ERROR } from '@/constant'
 
 type StreamParams = {
@@ -35,12 +35,14 @@ class ChatService {
         }
 
         return ChatService.instance
+
     }
 
     public async getStream(params: StreamParams) {
         const { prompt, history = [], options = {} } = params
         const key = getAPIKey()
         const url = getProxyUrl()
+        const model = getModel()
         let suggestion = ''
         if (key === '' && url === '') {
             throw new Error(ALL_SETTINGS_EMPTY_ERROR)
@@ -61,7 +63,8 @@ class ChatService {
                 body: JSON.stringify({
                     prompt,
                     key,
-                    url
+                    url,
+                    model,
                 }),
                 signal: this.controller.signal,
             })

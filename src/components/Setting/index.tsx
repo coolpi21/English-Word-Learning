@@ -3,18 +3,33 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { motion } from 'framer-motion'
 import { Asterisk, Settings } from 'lucide-react'
 import { Input } from '@/components/ui/input'
-import { useAtomValue, useSetAtom } from 'jotai'
-import { api_key, proxy_url } from '@/store'
-import {setAPIKey, setProxyUrl} from '@/utils/settingStorage'
+import { useAtom } from 'jotai'
+import { api_key, gpt_model, proxy_url } from '@/store'
+import { setAPIKey, setProxyUrl } from '@/utils/settingStorage'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { ModelType } from '@/types'
+import { isValidUrl } from '@/utils'
+import { useToast } from '@/components/ui/use-toast'
 
 const Setting = () => {
-    const keyValue = useAtomValue(api_key)
-    const urlValue = useAtomValue(proxy_url)
-    const setKeyValue = useSetAtom(api_key)
-    const setUrlValue = useSetAtom(proxy_url)
+    const [keyValue, setKeyValue] = useAtom(api_key)
+    const [urlValue, setUrlValue] = useAtom(proxy_url)
+    const [modelValue, setModelValue] = useAtom(gpt_model)
+
     const [apiKeyValue, setApiKeyValue] = useState(keyValue)
     const [proxyUrlValue, setProxyUrlValue] = useState(urlValue)
+
+    const modelList = [
+        {
+            id: 1,
+            value: 'gpt-3.5-turbo-0613',
+        },
+        { id: 2, value: 'gpt-3.5-turbo-16k' },
+        { id: 3, value: 'gpt-3.5-turbo-0301' },
+    ]
+
+    const { toast } = useToast()
 
     function onSetAPIKey(e: React.KeyboardEvent<HTMLInputElement>) {
         if (e.key === 'Enter') {
@@ -24,6 +39,13 @@ const Setting = () => {
 
     function onSetProxyUrl(e: React.KeyboardEvent<HTMLInputElement>) {
         if (e.key === 'Enter') {
+            if (!isValidUrl(proxyUrlValue)) {
+                toast({
+                    description: '请输入正确的 PROXY_URL 地址',
+                    className: 'bg-[#ff4d4f] border-0 text-white',
+                })
+                return
+            }
             handleSetProxyUrl()
         }
     }
@@ -45,6 +67,10 @@ const Setting = () => {
         }
     }
 
+    function handleModelChangeValue(value: ModelType) {
+        setModelValue(value)
+    }
+
     return (
         <Popover onOpenChange={onOpenChange}>
             <PopoverTrigger asChild>
@@ -52,7 +78,7 @@ const Setting = () => {
                     <Settings size={24} color='#ffffff' />
                 </motion.div>
             </PopoverTrigger>
-            <PopoverContent className='w-80'>
+            <PopoverContent className='w-80 z-[100]' align='end' sideOffset={5}>
                 <div className='grid gap-4'>
                     <div className='space-y-2'>
                         <h4 className='font-medium leading-none'>设置</h4>
@@ -83,6 +109,25 @@ const Setting = () => {
                                 onChange={(e) => setProxyUrlValue(e.target.value)}
                                 onKeyDown={onSetProxyUrl}
                             />
+                        </div>
+                        <div className='grid grid-cols-2 items-center gap-3'>
+                            <Label className='flex'>
+                                <Asterisk size={12} color='red' />
+                                GPT_MODEL
+                            </Label>
+
+                            <Select onValueChange={handleModelChangeValue} defaultValue={modelValue}>
+                                <SelectTrigger className='col-span-2 h-8'>
+                                    <SelectValue placeholder='Theme' />
+                                </SelectTrigger>
+                                <SelectContent className='z-[150]'>
+                                    {modelList.map((v) => (
+                                        <SelectItem value={v.value} key={v.id}>
+                                            {v.value}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
                 </div>
