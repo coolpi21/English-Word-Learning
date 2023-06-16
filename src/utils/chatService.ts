@@ -2,6 +2,7 @@
 import { Message } from '@/types'
 import { getAPIKey, getModel, getProxyUrl } from '@/utils/settingStorage'
 import { ALL_SETTINGS_EMPTY_ERROR, API_KEY_EMPTY_ERROR, PROXY_URL_EMPTY_ERROR } from '@/constant'
+import { Base64 } from 'js-base64'
 
 type StreamParams = {
     prompt: string
@@ -9,9 +10,6 @@ type StreamParams = {
     options?: {
         temperature?: number
         max_tokens?: number
-        // top_p?: number;
-        // frequency_penalty?: number;
-        // presence_penalty?: number;
     }
 }
 
@@ -35,15 +33,15 @@ class ChatService {
         }
 
         return ChatService.instance
-
     }
 
     public async getStream(params: StreamParams) {
-        const { prompt, history = [], options = {} } = params
+        const { prompt } = params
         const key = getAPIKey()
         const url = getProxyUrl()
         const model = getModel()
         let suggestion = ''
+
         if (key === '' && url === '') {
             throw new Error(ALL_SETTINGS_EMPTY_ERROR)
         }
@@ -62,14 +60,15 @@ class ChatService {
                 method: 'POST',
                 body: JSON.stringify({
                     prompt,
-                    key,
-                    url,
+                    key: Base64.encode(key),
+                    url: Base64.encode(url),
                     model,
                 }),
                 signal: this.controller.signal,
             })
 
             const data = response.body
+
             if (!data) {
                 return
             }
@@ -84,6 +83,7 @@ class ChatService {
 
                 const chunkValue = decoder.decode(value)
                 suggestion += chunkValue
+
                 this.actions?.onCompleting(suggestion)
                 await new Promise((resolve) => setTimeout(resolve, 100))
             }

@@ -26,10 +26,10 @@
 
 .word-card__content h3 {
     @apply text-lg text-white mb-2;
-
 }
 
 .word-card__content p,
 .word-card__content li {
     @apply mb-2 text-sm text-[#7d8590];
+    line-height: 2;
 }

@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ModelType } from '@/types'
 import { isValidUrl } from '@/utils'
 import { useToast } from '@/components/ui/use-toast'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 const Setting = () => {
     const [keyValue, setKeyValue] = useAtom(api_key)
@@ -33,16 +34,29 @@ const Setting = () => {
 
     function onSetAPIKey(e: React.KeyboardEvent<HTMLInputElement>) {
         if (e.key === 'Enter') {
+            if (apiKeyValue === '') {
+                toast({
+                    description: '请输入 API_KEY',
+                    className: 'bg-toast-warning border-0 text-white',
+                })
+            }
             handleSetAPIKey()
         }
     }
 
     function onSetProxyUrl(e: React.KeyboardEvent<HTMLInputElement>) {
         if (e.key === 'Enter') {
+            if (proxyUrlValue === '') {
+                toast({
+                    description: '请输入 PROXY_URL 地址',
+                    className: 'bg-toast-warning border-0 text-white',
+                })
+                return
+            }
             if (!isValidUrl(proxyUrlValue)) {
                 toast({
                     description: '请输入正确的 PROXY_URL 地址',
-                    className: 'bg-[#ff4d4f] border-0 text-white',
+                    className: 'bg-toast-error border-0 text-white',
                 })
                 return
             }
@@ -73,11 +87,24 @@ const Setting = () => {
 
     return (
         <Popover onOpenChange={onOpenChange}>
-            <PopoverTrigger asChild>
-                <motion.div className='fixed right-5 top-5' initial={{ scale: 0.95 }} whileHover={{ scale: 1 }}>
-                    <Settings size={24} color='#ffffff' />
-                </motion.div>
-            </PopoverTrigger>
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <PopoverTrigger asChild>
+                            <motion.div
+                                className='fixed right-5 top-5'
+                                initial={{ scale: 0.95 }}
+                                whileHover={{ scale: 1 }}
+                            >
+                                <Settings size={24} color='#ffffff' />
+                            </motion.div>
+                        </PopoverTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>设置</p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
             <PopoverContent className='w-80 z-[100]' align='end' sideOffset={5}>
                 <div className='grid gap-4'>
                     <div className='space-y-2'>

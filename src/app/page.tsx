@@ -11,6 +11,7 @@ import chatService from '@/utils/chatService'
 import WordCard from '@/components/WordCard'
 import Setting from '@/components/Setting'
 import { useToast } from '@/components/ui/use-toast'
+import Help from '@/components/Help'
 
 const Home = () => {
     const [searchWord, setSearchWord] = useState('')
@@ -30,8 +31,8 @@ const Home = () => {
         setWordDefinition(word)
     }
 
-    function onWordCompleted() {
-        if (isAborted) {
+    function onWordCompleted(isError: boolean) {
+        if (isAborted || isError) {
             setIsShowCollect(false)
         } else {
             setIsShowCollect(true)
@@ -113,7 +114,7 @@ const Home = () => {
             )}
 
             <Setting />
-
+            <Help />
             <Toaster></Toaster>
         </div>
     )

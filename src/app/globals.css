@@ -52,6 +52,12 @@
         --color-mktg-btn-shadow-hover-muted: rgb(255 255 255) 0 0 0 2px inset;
 
         --borderWidth-thin: max(1px, 0.0625rem);
+
+        --toast-success: #5069C3;
+
+        --toast-error: #ff4c00;
+
+        --toast-warning: #ffb700;
     }
 
     .dark {

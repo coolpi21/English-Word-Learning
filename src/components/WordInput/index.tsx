@@ -1,17 +1,18 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react'
-import { handleCheckIsEnglishWord } from '@/utils'
+import { generateENWordPrompt, handleCheckIsEnglishWord } from '@/utils'
 import { useToast } from '@/components/ui/use-toast'
 import { Input } from '@/components/ui/input'
 import './index.css'
 import chatService from '@/utils/chatService'
 import { ALL_SETTINGS_EMPTY_ERROR, API_KEY_EMPTY_ERROR, PROXY_URL_EMPTY_ERROR } from '@/constant'
 import { getEnWordStore } from '@/utils/enStorage'
+import { getAPIKey, getProxyUrl } from '@/utils/settingStorage'
 
 type Props = {
     onShowWordCard: () => void
     onWordStream: (word: string) => void
-    onWordCompleted: (word: string) => void
+    onWordCompleted: (isError: boolean) => void
     onGetWord: (word: string) => void
     onWordIsInLocalCompleted: (word: string) => void
 }
@@ -28,7 +29,26 @@ const WordInput = (props: Props) => {
             onWordStream(sug)
         },
         onCompleted: (sug: string) => {
-            onWordCompleted(sug)
+            let isError = false
+
+            if (sug.includes('invalid_api_key')) {
+                toast({
+                    description: '请配置正确的API_KEY',
+                    className: 'bg-toast-error border-0 text-white',
+                })
+                isError = true
+            }
+
+            if (sug.includes('404 Not Found')) {
+                toast({
+                    description: '请配置正确的 PROXY_URL',
+                    className: 'bg-toast-error border-0 text-white',
+                })
+
+                isError = true
+            }
+
+            onWordCompleted(isError)
             setLoading(false)
         },
     }
@@ -41,6 +61,7 @@ const WordInput = (props: Props) => {
     const onSubmitWord = async (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault()
+            if (!checkIsNotSetting()) return
             if (!checkIsEmptyInput()) return
             if (!handleCheckIsEnglishWord(searchWord)) {
                 toast({
@@ -49,8 +70,8 @@ const WordInput = (props: Props) => {
                 })
                 return
             }
-            if (checkIsExistInLocal(searchWord)) return
-            onGetWord(searchWord)
+            onGetWord(searchWord.toLowerCase())
+            if (checkIsExistInLocal(searchWord.toLowerCase())) return
             onShowWordCard()
             await requestWordLearning()
         }
@@ -58,27 +79,10 @@ const WordInput = (props: Props) => {
 
     async function requestWordLearning() {
         if (loading) return
-        const prompt = `你是一位优秀的英语老师，每当我输入一个单词，你需要完成以下任务：
-            task1: 单词词性、音标、中文释义、英文释义、词根词缀起源故事，一行一个
-            task2: 用这个单词造三个工作场景英文例句附英文翻译
-            task3: 用这个单词的词根词缀，拓展5个相近单词，附带音标、词性和中文释义
-            task4: 用task3拓展出的单词编写一个有趣的A2难度的英文故事，限7行内
-            task5: 基于前4个任务生成内容创造3个单选题，选项一行一个，最后一行一起给出每题的答案
-            
-            将以上任务结果按以下Markdown格式排版输出:
-            ### 单词释义
-            <task1 result>
-            ### 场景例句
-            <task2 result>
-            ### 相近词
-            <task3 result>
-            ### 英文故事
-            <task4 result>
-            ### 小测验
-            <task5 result>
-            
-            单词是 ${searchWord}`
+        const prompt = generateENWordPrompt(searchWord.toLowerCase())
+
         setLoading(true)
+
         try {
             await chatService.getStream({
                 prompt,
@@ -87,24 +91,15 @@ const WordInput = (props: Props) => {
             const error = e as Error
 
             if (error.message === API_KEY_EMPTY_ERROR) {
-                toast({
-                    description: '请去填写API KEY',
-                    className: 'bg-[#ff4d4f] border-0 text-white',
-                })
+                showErrorToastMessage('请去填写API KEY')
             }
 
             if (error.message === PROXY_URL_EMPTY_ERROR) {
-                toast({
-                    description: '请去填写PROXY URL',
-                    className: 'bg-[#ff4d4f] border-0 text-white',
-                })
+                showErrorToastMessage('请去填写PROXY URL')
             }
 
             if (error.message === ALL_SETTINGS_EMPTY_ERROR) {
-                toast({
-                    description: '您的配制项为空，请去填写',
-                    className: 'bg-[#ff4d4f] border-0 text-white',
-                })
+                showErrorToastMessage('您的配制项为空，请去填写')
             }
         } finally {
             setLoading(false)
@@ -112,7 +107,7 @@ const WordInput = (props: Props) => {
         }
     }
 
-    function checkIsEmptyInput() {
+    function checkIsEmptyInput(): boolean {
         if (searchWord === '') {
             toast({
                 description: '请输入英文单词',
@@ -123,7 +118,7 @@ const WordInput = (props: Props) => {
         return true
     }
 
-    function checkIsExistInLocal(word: string) {
+    function checkIsExistInLocal(word: string): boolean {
         const wordList = getEnWordStore()
         const existWord = wordList.find((v) => v.word === word)
 
@@ -132,6 +127,23 @@ const WordInput = (props: Props) => {
             return true
         }
         return false
+    }
+
+    function checkIsNotSetting(): boolean {
+        const key = getAPIKey()
+        const url = getProxyUrl()
+        if (key === '' || url === '') {
+            showErrorToastMessage('配置项缺失，请先配置')
+            return false
+        }
+        return true
+    }
+
+    function showErrorToastMessage(msg: string) {
+        toast({
+            description: msg,
+            className: 'bg-[#ff4d4f] border-0 text-white',
+        })
     }
 
     return (

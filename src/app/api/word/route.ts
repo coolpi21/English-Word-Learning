@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { type MessageList } from '@/types'
 import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser'
 import { MAX_TOKEN, TEMPERATURE } from '@/constant'
+import { Base64 } from 'js-base64'
 
 export const runtime = 'edge'
 
@@ -30,13 +31,12 @@ export async function POST(req: NextRequest) {
         max_tokens: Number(max_tokens) || MAX_TOKEN,
     }
 
-    const stream = await requestStream(data as any, key, url)
+    const stream = await requestStream(data as any, Base64.decode(key), Base64.decode(url))
     return new Response(stream)
 }
 
 async function requestStream(payload: StreamPayload, key: string, url: string) {
     let counter = 0
-    console.log(url, key)
 
     const resp = await fetch(`${url}/v1/chat/completions`, {
         headers: {

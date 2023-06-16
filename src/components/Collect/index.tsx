@@ -27,20 +27,22 @@ const Collect = ({ cardList, onCancelCollect, onSelectCollectWord }: Props) => {
                 'border-0',
                 'hover:bg-second',
                 'transition',
-                'duration-300'
+                'duration-300',
             ])}
         >
             <CardContent className={clsx(['p-0', 'text-second-text'])}>
-                <div className='flex justify-center items-center'>
-                    <span className='pr-2 font-alimama cursor-default' onClick={() => onSelectCollectWord(item.word)}>
-                        {item.word}
-                    </span>
+                <div className='flex justify-center items-center' onClick={() => onSelectCollectWord(item.word)}>
+                    <span className='pr-2 font-alimama cursor-default'>{item.word}</span>
                     <Star
                         size={16}
                         fill='yellow'
                         color='yellow'
                         className='cursor-pointer'
-                        onClick={() => onCancelCollect(item.word)}
+                        onClick={(e: React.MouseEvent) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            onCancelCollect(item.word)
+                        }}
                     ></Star>
                 </div>
             </CardContent>
