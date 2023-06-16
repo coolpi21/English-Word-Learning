@@ -24,13 +24,13 @@ const Sidebar = () => {
 
     const { toast } = useToast()
     const open_btn_variants = {
-        open: { left: 'calc(100vw - 110px)' },
+        open: { left: 'calc(100vw - 150px)' },
         close: { left: '90px' },
     }
 
     const download_btn_variants = {
-        open: { opacity: 1 },
-        close: { opacity: 0 },
+        open: { opacity: 1, scale: 0.95 },
+        close: { opacity: 0, scale: 0.95 },
     }
 
     useEffect(() => {
@@ -104,7 +104,7 @@ const Sidebar = () => {
     return (
         <motion.div
             initial={{ width: '120px', position: 'fixed', left: 0, top: 0 }}
-            animate={{ width: isWider ? 'calc(100vw - 80px)' : '120px' }}
+            animate={{ width: isWider ? 'calc(100vw - 120px)' : '120px' }}
             style={{ zIndex: isWider ? 100 : 10 }}
             className='backdrop-blur-sm'
         >
@@ -135,7 +135,12 @@ const Sidebar = () => {
                         </TooltipProvider>
                     </Link>
 
-                    <motion.div variants={download_btn_variants} animate={isWider ? 'open' : 'close'} initial={false}>
+                    <motion.div
+                        variants={download_btn_variants}
+                        animate={isWider ? 'open' : 'close'}
+                        initial={false}
+                        whileHover={{ scale: 1 }}
+                    >
                         <Button
                             onClick={handleDownloadCSV}
                             disabled={isDisableDownload}
@@ -152,7 +157,6 @@ const Sidebar = () => {
                     animate={isWider ? 'open' : 'close'}
                     initial={false}
                 >
-
                     <motion.div
                         onClick={changeSidebarWidth}
                         className={clsx([

@@ -12,6 +12,9 @@
 
 .download--btn {
     background: var(--peach-gradient);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+    color: #000000;
+    border-radius: 18px;
 }
 
 .logo-text {

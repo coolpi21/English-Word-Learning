@@ -1,16 +1,16 @@
 'use client'
-import React, { useState } from 'react'
+import React, {useState} from 'react'
 import WordInput from '@/components/WordInput'
-import { Toaster } from '@/components/ui/toaster'
+import {Toaster} from '@/components/ui/toaster'
 import './page.css'
 import Sidebar from '@/components/Sidebar'
-import { addEnWordStore, getEnWordStore, removeEnWordStore } from '@/utils/enStorage'
-import { useSetAtom } from 'jotai'
-import { collectWordCardList } from '@/store'
+import {addEnWordStore, getEnWordStore, removeEnWordStore} from '@/utils/enStorage'
+import {useSetAtom} from 'jotai'
+import {collectWordCardList} from '@/store'
 import chatService from '@/utils/chatService'
 import WordCard from '@/components/WordCard'
 import Setting from '@/components/Setting'
-import { useToast } from '@/components/ui/use-toast'
+import {useToast} from '@/components/ui/use-toast'
 import Help from '@/components/Help'
 
 const Home = () => {
@@ -23,7 +23,7 @@ const Home = () => {
     const setCollectList = useSetAtom(collectWordCardList)
     const [isLoading, setIsLoading] = useState(false)
     const [isWordStreaming, setIsWordStreaming] = useState(false)
-    const { toast } = useToast()
+    const {toast} = useToast()
 
     function onWordStream(word: string) {
         setIsLoading(false)
@@ -32,8 +32,11 @@ const Home = () => {
     }
 
     function onWordCompleted(isError: boolean) {
+        console.log(isAborted, isError)
+
         if (isAborted || isError) {
             setIsShowCollect(false)
+            setIsAborted(false)
         } else {
             setIsShowCollect(true)
         }
@@ -94,7 +97,7 @@ const Home = () => {
 
     return (
         <div className='container h-screen w-screen flex flex-col items-center justify-center'>
-            <Sidebar />
+            <Sidebar/>
             <WordInput
                 onWordStream={onWordStream}
                 onWordCompleted={onWordCompleted}
@@ -113,8 +116,8 @@ const Home = () => {
                 ></WordCard>
             )}
 
-            <Setting />
-            <Help />
+            <Setting/>
+            <Help/>
             <Toaster></Toaster>
         </div>
     )

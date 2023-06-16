@@ -28,7 +28,7 @@ const WordCard = (props: Props) => {
                 initial={{ scale: 0.95 }}
                 whileHover={{ scale: 1 }}
                 onClick={onCloseWordCard}
-                className='absolute right-5 top-5'
+                className='absolute left-5 top-5'
             >
                 <XCircle size={36} color='#ffffff' />
             </motion.div>

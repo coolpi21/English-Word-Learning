@@ -32,7 +32,7 @@ const Collect = ({ cardList, onCancelCollect, onSelectCollectWord }: Props) => {
         >
             <CardContent className={clsx(['p-0', 'text-second-text'])}>
                 <div className='flex justify-center items-center' onClick={() => onSelectCollectWord(item.word)}>
-                    <span className='pr-2 font-alimama cursor-default'>{item.word}</span>
+                    <span className='pr-2 cursor-default'>{item.word}</span>
                     <Star
                         size={16}
                         fill='yellow'
